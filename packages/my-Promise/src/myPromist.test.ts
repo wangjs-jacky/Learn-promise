@@ -99,4 +99,19 @@ describe("Promise", () => {
 
     promise.then(null, fail);
   });
+
+  /* @todo: 此时此代码实现并非为微任务，因为不能保证 success 函数执行优于所有的宏任务时间 */
+  it("【难】2.2.4 在代码执行完之前，不得调用 then 后面函数，即 resolve 呈现异步状态", () => {
+    const success = vi.fn();
+    const promise = new Promise((resolve) => {
+      resolve();
+    });
+    promise.then(success);
+    /* 此时同步片段中，success 函数仍未被调用 */
+    expect(success).not.toHaveBeenCalled();
+    setTimeout(() => {
+      /* 异步执行代码时，success 函数被触发调用 */
+      expect(success).toHaveBeenCalled();
+    }, 0);
+  });
 });
