@@ -25,10 +25,10 @@ class myPromise {
     );
   }
 
-  succeed: Function | null | undefined = null;
-  fail: Function | null | undefined = null;
+  succeed: Function | null | undefined | false = null;
+  fail: Function | null | undefined | false = null;
 
-  then(succeed?: Function | null, fail?: Function | null) {
+  then(succeed?: Function | null | false, fail?: Function | null | false) {
     this.succeed = succeed;
     this.fail = fail;
   }

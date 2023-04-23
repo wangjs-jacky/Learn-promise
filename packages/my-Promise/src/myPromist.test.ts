@@ -54,4 +54,13 @@ describe("Promise", () => {
     });
     promise.then(null, fail);
   });
+
+  it("2.2.1 onFullfilled 和 onRejected 都是可选的参数", () => {
+    expect(() => {
+      const promise = new Promise((resolve) => {
+        resolve();
+      });
+      promise.then(false, null);
+    }).not.toThrowError();
+  });
 });
