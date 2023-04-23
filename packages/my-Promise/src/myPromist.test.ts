@@ -63,4 +63,22 @@ describe("Promise", () => {
       promise.then(false, null);
     }).not.toThrowError();
   });
+
+  it("2.2.2 如果 onFulfilled 是函数", () => {
+    const success = vi.fn();
+    const promise = new Promise((resolve) => {
+      expect(success).not.toHaveBeenCalled();
+      /* 连续掉两次，success 只会执行一次 */
+      resolve(233);
+      resolve(233);
+      setTimeout(() => {
+        expect(promise.state === "fulfilled");
+        expect(success).toHaveBeenCalledOnce();
+        /* success 接受 resolve 传递的参数 */
+        expect(success).toHaveBeenCalledWith(233);
+      });
+    });
+
+    promise.then(success);
+  });
 });
