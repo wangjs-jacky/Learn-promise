@@ -31,6 +31,7 @@ describe("Promise", () => {
   });
 
   it("promise.then(success) 中的 success 会在 resolve 被调用的时候执行", () => {
+    /* vitest 中的 done 写法：https://cn.vitest.dev/guide/migration.html */
     const success = vi.fn();
     const promise = new Promise((resolve, reject) => {
       expect(success).not.toHaveBeenCalled();
@@ -40,5 +41,17 @@ describe("Promise", () => {
       });
     });
     promise.then(success);
+  });
+
+  it("promise.then(null,fail) 中的 fail 会在 reject 被调用的时候执行", () => {
+    const fail = vi.fn();
+    const promise = new Promise((resolve, reject) => {
+      expect(fail).not.toHaveBeenCalled();
+      reject();
+      setTimeout(() => {
+        expect(fail).toHaveBeenCalled();
+      });
+    });
+    promise.then(null, fail);
   });
 });
