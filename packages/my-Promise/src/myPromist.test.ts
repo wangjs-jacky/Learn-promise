@@ -114,4 +114,15 @@ describe("Promise", () => {
       expect(success).toHaveBeenCalled();
     }, 0);
   });
+  it("【难】2.2.5 onFulfilled和onRejected 被当做函数调用时，this 指向 undefined", () => {
+    const promise = new Promise((resolve) => {
+      resolve();
+    });
+
+    promise.then(function () {
+      /* 注意此时应为严格模式 */
+      console.log("this", this);
+      expect(this).toBeUndefined();
+    });
+  });
 });

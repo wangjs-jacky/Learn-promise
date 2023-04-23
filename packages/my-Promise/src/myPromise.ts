@@ -6,7 +6,7 @@ class myPromise {
     if (this.state !== "pending") return;
     this.state = "fulfilled";
     setTimeout(() => {
-      this.succeed && this.succeed(result);
+      this.succeed && this.succeed.call(undefined, result);
     });
   };
 
@@ -14,7 +14,7 @@ class myPromise {
     if (this.state !== "pending") return;
     this.state = "rejected";
     setTimeout(() => {
-      this.fail && this.fail(reason);
+      this.fail && this.fail.call(undefined, reason);
     });
   };
 
