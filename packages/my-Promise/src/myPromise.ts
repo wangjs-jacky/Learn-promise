@@ -1,3 +1,5 @@
+type CallBackType = Function | null | false;
+
 class myPromise {
   state: "pending" | "fulfilled" | "rejected" = "pending";
 
@@ -6,7 +8,12 @@ class myPromise {
     if (this.state !== "pending") return;
     this.state = "fulfilled";
     setTimeout(() => {
-      this.succeed && this.succeed.call(undefined, result);
+      this.callbacks.forEach((handle) => {
+        const success = handle[0];
+        if (typeof success === "function") {
+          success.call(undefined, result);
+        }
+      });
     });
   };
 
@@ -14,7 +21,12 @@ class myPromise {
     if (this.state !== "pending") return;
     this.state = "rejected";
     setTimeout(() => {
-      this.fail && this.fail.call(undefined, reason);
+      this.callbacks.forEach((handle) => {
+        const fail = handle[1];
+        if (typeof fail === "function") {
+          fail.call(undefined, reason);
+        }
+      });
     });
   };
 
@@ -25,12 +37,20 @@ class myPromise {
     fn(this.resolve, this.reject);
   }
 
+  callbacks: [CallBackType, CallBackType][] = [];
+
   succeed: Function | null | undefined | false = null;
   fail: Function | null | undefined | false = null;
 
-  then(succeed?: Function | null | false, fail?: Function | null | false) {
-    this.succeed = succeed;
-    this.fail = fail;
+  then(succeed?: CallBackType, fail?: CallBackType) {
+    const handle = [] as unknown as [CallBackType, CallBackType];
+    if (typeof succeed === "function") {
+      handle[0] = succeed;
+    }
+    if (typeof fail === "function") {
+      handle[1] = fail;
+    }
+    this.callbacks.push(handle);
   }
 }
 

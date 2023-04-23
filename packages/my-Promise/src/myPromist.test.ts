@@ -125,4 +125,35 @@ describe("Promise", () => {
       expect(this).toBeUndefined();
     });
   });
+
+  it("【中】2.2.6 支持链式 then 的写法，要求调用顺序遵循书写顺序", () => {
+    const promise = new Promise((resolve) => {
+      resolve();
+    });
+
+    const callbacks = [vi.fn(), vi.fn(), vi.fn()];
+    promise.then(callbacks[0]);
+    promise.then(callbacks[1]);
+    promise.then(callbacks[2]);
+    setTimeout(() => {
+      expect(callbacks[0]).toHaveBeenCalled();
+      expect(callbacks[1]).toHaveBeenCalled();
+      expect(callbacks[2]).toHaveBeenCalled();
+
+      /* ChatGPT 给出的方案：如下结果分别为 [7][8][9] */
+      console.log(callbacks[0].mock.invocationCallOrder);
+      console.log(callbacks[1].mock.invocationCallOrder);
+      console.log(callbacks[2].mock.invocationCallOrder);
+
+      /* 0 < 1  */
+      expect(callbacks[0].mock.invocationCallOrder[0]).toBeLessThan(
+        callbacks[1].mock.invocationCallOrder[0],
+      );
+
+      /* 1 < 2  */
+      expect(callbacks[1].mock.invocationCallOrder[0]).toBeLessThan(
+        callbacks[2].mock.invocationCallOrder[0],
+      );
+    });
+  });
 });
