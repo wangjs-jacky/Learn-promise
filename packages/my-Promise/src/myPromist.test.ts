@@ -64,7 +64,7 @@ describe("Promise", () => {
     }).not.toThrowError();
   });
 
-  it("2.2.2 如果 onFulfilled 是函数", () => {
+  it("2.2.2 如果 onFulfilled 是函数,需满足多次 resolve 只触发一次，且支持成功信息的传递", () => {
     const success = vi.fn();
     const promise = new Promise((resolve) => {
       expect(success).not.toHaveBeenCalled();
@@ -80,5 +80,23 @@ describe("Promise", () => {
     });
 
     promise.then(success);
+  });
+
+  it("2.2.3 如果 onRejected 是函数,需满足多次 reject 只触发一次，且支持错误信息的传递", () => {
+    const fail = vi.fn();
+    const promise = new Promise((resolve, reject) => {
+      expect(fail).not.toHaveBeenCalled();
+      /* 连续掉两次，success 只会执行一次 */
+      reject(233);
+      reject(233);
+      setTimeout(() => {
+        expect(promise.state === "rejected");
+        expect(fail).toHaveBeenCalledOnce();
+        /* success 接受 resolve 传递的参数 */
+        expect(fail).toHaveBeenCalledWith(233);
+      });
+    });
+
+    promise.then(null, fail);
   });
 });
