@@ -156,4 +156,16 @@ describe("Promise", () => {
       );
     });
   });
+
+  it("2.2.7 then 必须返回一个 promise", () => {
+    const promsie = new Promise((resolve) => {
+      resolve();
+    });
+    const promise2 = promsie.then(
+      () => {},
+      () => {},
+    );
+    /* .then 的返回值是 Promise 的一个实例 */
+    expect(promise2).toBeInstanceOf(Promise);
+  });
 });

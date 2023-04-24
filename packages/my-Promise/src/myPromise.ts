@@ -51,6 +51,7 @@ class myPromise {
       handle[1] = fail;
     }
     this.callbacks.push(handle);
+    return new myPromise(() => {});
   }
 }
 
