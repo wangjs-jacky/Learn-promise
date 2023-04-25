@@ -7,7 +7,7 @@ class myPromise {
     /* @todo: 理论上 resolve 应由 微任务 处理，这里仅使用宏任务模拟 */
     if (this.state !== "pending") return;
     this.state = "fulfilled";
-    setTimeout(() => {
+    process.nextTick(() => {
       this.callbacks.forEach((handle) => {
         const success = handle[0];
         if (typeof success === "function") {
@@ -21,7 +21,7 @@ class myPromise {
   reject = (reason) => {
     if (this.state !== "pending") return;
     this.state = "rejected";
-    setTimeout(() => {
+    process.nextTick(() => {
       this.callbacks.forEach((handle) => {
         const fail = handle[1];
         if (typeof fail === "function") {
@@ -83,6 +83,10 @@ class myPromise {
         try {
           then(
             (y) => {
+              /* 特别注意：x 是 thenable 和 promise 最大的不同是，x.then 的回调结果
+                前者执行后还有可能是 自身引用/promise/thenable/普通类型; 而后者只有可能是普通类型。
+                因此这里千万注意要使用  this.resolveWith(y)
+              */
               this.resolveWith(y);
             },
             (r) => {
