@@ -187,15 +187,55 @@ describe("Promise", () => {
     }));
 
   it("2.2.7.1.2 success 的返回值是一个 Promise 实例", () => {
-    const succeed = vi.fn();
     const promise1 = new Promise((resolve) => resolve());
-    const promise2 = promise1.then(() => new Promise((resolve) => resolve()));
-    promise2.then(succeed);
 
-    /* @todo: 这里由于 */
-    setTimeout(() => {
-      expect(succeed).toHaveBeenCalled();
-    }, 5);
+    /* .then 中返回的是一个 Promise 类型*/
+    const promise2 = promise1.then(
+      () => new Promise((resolve) => resolve("成功")),
+    );
+
+    /* 此时 x 为 new Promise((resolve) => resolve("成功")
+       直接 x.then 后取出结果，并传递给 resolveWith 函数中的 this.resolve() 即可。
+    */
+    promise2.then((res) => {
+      console.log("res", res);
+      expect(res).toMatchInlineSnapshot('"成功"');
+    });
+  });
+
+  it("【需非常注意】2.2.7.1.2 success 的返回值是一个 thenable 对象, 成功调用", () => {
+    const promise1 = new Promise((resolve) => resolve());
+
+    /* .then 中返回的是一个 Promise 类型*/
+    const promise2 = promise1.then(() => {
+      return {
+        then: (resolve, reject) => {
+          resolve("成功");
+        },
+      };
+    });
+
+    promise2.then((res) => {
+      console.log("res", res);
+      expect(res).toMatchInlineSnapshot('"成功"');
+    });
+  });
+
+  it("【需非常注意】2.2.7.1.2 success 的返回值是一个 thenable 对象, 失败调用", () => {
+    const promise1 = new Promise((resolve) => resolve());
+    /* .then 中返回的是一个 Promise 类型*/
+    const promise2 = promise1.then(() => {
+      return {
+        then: (resolve, reject) => {
+          reject("失败");
+        },
+      };
+    });
+
+    promise2.then(null, (reason) => {
+      console.log("res", reason);
+      expect(reason).toMatchInlineSnapshot('"失败"');
+    });
   });
 
   it("【需非常注意】2.2.7.1.2 success 的返回值不能是 promise 自身索引", () =>
@@ -205,7 +245,7 @@ describe("Promise", () => {
       /* 不允许处理自身的引用地址 */
       const promise2 = promise1.then(() => promise2);
       promise2.then(null, (reason) => {
-        expect(reason).toMatchInlineSnapshot('[TypeError: 不允许返回自身引用]');
+        expect(reason).toMatchInlineSnapshot("[TypeError: 不允许返回自身引用]");
         done();
       });
     }));
