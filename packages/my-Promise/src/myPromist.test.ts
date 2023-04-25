@@ -168,4 +168,33 @@ describe("Promise", () => {
     /* .then 的返回值是 Promise 的一个实例 */
     expect(promise2).toBeInstanceOf(Promise);
   });
+  it("【难】2.2.7.1 .then(success,fail) 同样支持两个函数，且支持接受返回结果", () =>
+    new Promise((done) => {
+      const promise1 = new Promise((resolve) => {
+        resolve();
+      });
+      promise1
+        .then(
+          () => "成功",
+          () => {},
+        )
+        .then((result) => {
+          /* https://cn.vitest.dev/guide/migration.html 
+             由于检测异步中的某个结果，因此需要使用 done 结束。*/
+          expect(result).toMatchInlineSnapshot('"成功"');
+          done();
+        });
+    }));
+
+  it("2.2.7.1.2 success 的返回值是一个 Promise 实例", () => {
+    const succeed = vi.fn();
+    const promise1 = new Promise((resolve) => resolve());
+    const promise2 = promise1.then(() => new Promise((resolve) => resolve()));
+    promise2.then(succeed);
+
+    /* @todo: 这里由于 */
+    setTimeout(() => {
+      expect(succeed).toHaveBeenCalled();
+    }, 4);
+  });
 });
