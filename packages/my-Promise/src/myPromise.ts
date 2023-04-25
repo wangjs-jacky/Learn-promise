@@ -7,7 +7,7 @@ class myPromise {
     /* @todo: 理论上 resolve 应由 微任务 处理，这里仅使用宏任务模拟 */
     if (this.state !== "pending") return;
     this.state = "fulfilled";
-    process.nextTick(() => {
+    nextTick(() => {
       this.callbacks.forEach((handle) => {
         const success = handle[0];
         if (typeof success === "function") {
@@ -21,7 +21,7 @@ class myPromise {
   reject = (reason) => {
     if (this.state !== "pending") return;
     this.state = "rejected";
-    process.nextTick(() => {
+    nextTick(() => {
       this.callbacks.forEach((handle) => {
         const fail = handle[1];
         if (typeof fail === "function") {
@@ -103,6 +103,31 @@ class myPromise {
       this.resolve(x);
     }
   }
+}
+
+/* 添加 polyfill */
+function nextTick(fn) {
+  /* Node 环境下使用 process.nextTick 模拟 */
+  console.log("process.next", process);
+
+  if (process !== undefined && typeof process.nextTick === "function") {
+    return process.nextTick(fn);
+  }
+
+  /* Vue源码：浏览器环境使用 MutationObserver */
+  let counter = 1;
+  const observer = new MutationObserver(fn);
+  /* 1. 创建一个虚拟的文本节点 */
+  const textNode = document.createTextNode(counter + "");
+
+  /* 2. 开启 Mutation 去监听 TextNode 这个 DOM 元素 */
+  observer.observe(textNode, {
+    characterData: true,
+  });
+
+  /* 3. 触发 TextNode 数据属性的改变 */
+  counter += 1;
+  textNode.data = counter + "";
 }
 
 export { myPromise };
