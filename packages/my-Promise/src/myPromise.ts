@@ -60,7 +60,7 @@ class myPromise {
   resolveWith(x) {
     /* 如果 then 返回的是引用自身，则报错 */
     if (this === x) {
-      this.reject(new TypeError());
+      this.reject(new TypeError("不允许返回自身引用"));
     } else if (x instanceof myPromise) {
       /* 如果是一个 Promise, 需要通过 then 获取值 */
       x.then(

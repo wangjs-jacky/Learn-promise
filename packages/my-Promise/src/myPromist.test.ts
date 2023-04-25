@@ -195,6 +195,18 @@ describe("Promise", () => {
     /* @todo: 这里由于 */
     setTimeout(() => {
       expect(succeed).toHaveBeenCalled();
-    }, 4);
+    }, 5);
   });
+
+  it("【需非常注意】2.2.7.1.2 success 的返回值不能是 promise 自身索引", () =>
+    new Promise((done) => {
+      const promise1 = new Promise((resolve) => resolve());
+      /* 使用 promise1 的 then 返回一个新引用地址的 promise2 */
+      /* 不允许处理自身的引用地址 */
+      const promise2 = promise1.then(() => promise2);
+      promise2.then(null, (reason) => {
+        expect(reason).toMatchInlineSnapshot('[TypeError: 不允许返回自身引用]');
+        done();
+      });
+    }));
 });
