@@ -94,10 +94,10 @@ describe("测试 Promise", () => {
         done();
       });
     }));
-  it("测试 Promise.race 功能", () =>
+  it("测试 Promise.race 功能 - 成功快", () =>
     new Promise<void>((done) => {
-      const p1 = new myPromise((resolve) => {
-        setTimeout(() => resolve(200), 200);
+      const p1 = new myPromise((reject) => {
+        setTimeout(() => reject(200), 200);
       });
       const p2 = new myPromise((resolve) => {
         setTimeout(() => resolve(100), 100);
@@ -108,13 +108,17 @@ describe("测试 Promise", () => {
         done();
       });
     }));
-  it("测试 Promise.race 功能 - 所有测试案例均失败", () =>
+  it("测试 Promise.race 功能 - 失败快", () =>
     new Promise<void>((done) => {
-      const p1 = myPromise.reject("err1");
-      const p2 = myPromise.reject("err2");
+      const p1 = new myPromise((resolve) => {
+        setTimeout(() => resolve(200), 200);
+      });
+      const p2 = new myPromise((resolve, reject) => {
+        setTimeout(() => reject(100), 100);
+      });
 
       myPromise.race([p1, p2]).catch((reason) => {
-        expect(reason).toMatchInlineSnapshot('"All Promise were rejected"');
+        expect(reason).toMatchInlineSnapshot('100');
         done();
       });
     }));

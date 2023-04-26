@@ -81,15 +81,12 @@ PromiseCore.race = (promiseList: any[]) => {
     promiseList.forEach((p) => {
       PromiseCore.resolve(p).then(
         (res) => resolve(res),
-        (reason) => {
-          rejectCount++;
-          if (rejectCount === promiseList.length) {
-            reject("All Promise were rejected");
-          }
-        },
+        (reason) => reject(reason),
       );
     });
   });
 };
+
+PromiseCore.any = (promiseList: any[]) => {};
 
 export default PromiseCore;
