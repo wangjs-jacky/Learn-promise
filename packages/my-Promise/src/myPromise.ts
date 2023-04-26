@@ -76,8 +76,10 @@ PromiseCore.allSettled = (promiseList: any[]) => {
 };
 
 PromiseCore.race = (promiseList: any[]) => {
-  let rejectCount = 0;
   return new PromiseCore((resolve, reject) => {
+    if (promiseList.length === 0) {
+      resolve([]);
+    }
     promiseList.forEach((p) => {
       PromiseCore.resolve(p).then(
         (res) => resolve(res),
@@ -87,6 +89,24 @@ PromiseCore.race = (promiseList: any[]) => {
   });
 };
 
-PromiseCore.any = (promiseList: any[]) => {};
+PromiseCore.any = (promiseList: any[]) => {
+  let rejectCount = 0;
+  return new PromiseCore((resolve, reject) => {
+    if (promiseList.length === 0) {
+      resolve([]);
+    }
+    promiseList.forEach((p) => {
+      PromiseCore.resolve(p).then(
+        (res) => resolve(res),
+        (reason) => {
+          rejectCount++;
+          if (rejectCount === promiseList.length) {
+            reject("All Promise task failed");
+          }
+        },
+      );
+    });
+  });
+};
 
 export default PromiseCore;

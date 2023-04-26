@@ -8,6 +8,7 @@ class PromiseCore {
   static allSettled: (promiseList: any[]) => PromiseCore;
   static all: (promiseList: any[]) => PromiseCore;
   static race: (promiseList: any[]) => PromiseCore;
+  static any: (promiseList: any[]) => PromiseCore;
 
   resolve(result) {
     /* @todo: 理论上 resolve 应由 微任务 处理，这里仅使用宏任务模拟 */

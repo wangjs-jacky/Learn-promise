@@ -94,7 +94,7 @@ describe("测试 Promise", () => {
         done();
       });
     }));
-  it("测试 Promise.race 功能 - 成功快", () =>
+  it("测试 Promise.race 功能 - 第一个返回成功", () =>
     new Promise<void>((done) => {
       const p1 = new myPromise((reject) => {
         setTimeout(() => reject(200), 200);
@@ -108,7 +108,7 @@ describe("测试 Promise", () => {
         done();
       });
     }));
-  it("测试 Promise.race 功能 - 失败快", () =>
+  it("测试 Promise.race 功能 - 第一个返回失败", () =>
     new Promise<void>((done) => {
       const p1 = new myPromise((resolve) => {
         setTimeout(() => resolve(200), 200);
@@ -118,7 +118,31 @@ describe("测试 Promise", () => {
       });
 
       myPromise.race([p1, p2]).catch((reason) => {
-        expect(reason).toMatchInlineSnapshot('100');
+        expect(reason).toMatchInlineSnapshot("100");
+        done();
+      });
+    }));
+  it("测试 Promise.any 功能 - 失败fast,成功slow", () =>
+    new Promise<void>((done) => {
+      const p1 = new myPromise((resolve) => {
+        setTimeout(resolve, 50, "成功-fast");
+      });
+      const p2 = new myPromise((resolve, reject) => {
+        setTimeout(reject, 10, "失败-quick");
+      });
+
+      myPromise.any([p1, p2]).then((res) => {
+        expect(res).toMatchInlineSnapshot('"成功-slow"');
+        done();
+      });
+    }));
+  it("测试 Promise.any 功能 - 均失败", () =>
+    new Promise<void>((done) => {
+      const p1 = myPromise.reject("err1");
+      const p2 = myPromise.reject("err2");
+
+      myPromise.any([p1, p2]).catch((reason) => {
+        expect(reason).toMatchInlineSnapshot('"All Promise task failed"');
         done();
       });
     }));
