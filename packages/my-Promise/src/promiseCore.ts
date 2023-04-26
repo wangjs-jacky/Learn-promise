@@ -9,11 +9,11 @@ class PromiseCore {
   static all: (promiseList: any[]) => PromiseCore;
   static race: (promiseList: any[]) => PromiseCore;
   static any: (promiseList: any[]) => PromiseCore;
+  finally: (cb: any) => any;
+
+  /* 原型方法 */
 
   resolve(result) {
-    /* @todo: 理论上 resolve 应由 微任务 处理，这里仅使用宏任务模拟 */
-    console.log("this.state", this.state);
-
     if (this.state !== "pending") return;
     this.state = "fulfilled";
     nextTick(() => {

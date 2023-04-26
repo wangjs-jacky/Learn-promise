@@ -125,7 +125,7 @@ describe("测试 Promise", () => {
   it("测试 Promise.any 功能 - 失败fast,成功slow", () =>
     new Promise<void>((done) => {
       const p1 = new myPromise((resolve) => {
-        setTimeout(resolve, 50, "成功-fast");
+        setTimeout(resolve, 50, "成功-slow");
       });
       const p2 = new myPromise((resolve, reject) => {
         setTimeout(reject, 10, "失败-quick");
@@ -145,5 +145,42 @@ describe("测试 Promise", () => {
         expect(reason).toMatchInlineSnapshot('"All Promise task failed"');
         done();
       });
+    }));
+
+  it("测试 Promise.finally 功能 - 继承 成功 状态", () =>
+    new Promise<void>((done) => {
+      new myPromise((resolve, reject) => {
+        resolve("success");
+      })
+        .finally(
+          () =>
+            new myPromise((resolve) => {
+              setTimeout(() => {
+                resolve(111);
+              }, 10);
+            }),
+        )
+        .then((data) => {
+          expect(data).toMatchInlineSnapshot('"success"');
+          done();
+        });
+    }));
+  it("测试 Promise.finally 功能 - 继承 失败 状态", () =>
+    new Promise<void>((done) => {
+      new myPromise((resolve, reject) => {
+        reject("error1");
+      })
+        .finally(
+          () =>
+            new myPromise((resolve) => {
+              setTimeout(() => {
+                resolve(111);
+              }, 10);
+            }),
+        )
+        .then(null, (reason) => {
+          expect(reason).toMatchInlineSnapshot('"error1"');
+          done();
+        });
     }));
 });

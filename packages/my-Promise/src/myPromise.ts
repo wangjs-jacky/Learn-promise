@@ -109,4 +109,21 @@ PromiseCore.any = (promiseList: any[]) => {
   });
 };
 
+/* 绑定在原型上，所有实例都将继承 finally 属性 */
+PromiseCore.prototype.finally = function (cb) {
+  /* Promise.finally 将透传 Promise 的状态 !!! */
+  /* let a = this.then(
+    (value) => PromiseCore.resolve(cb()).then(() => value),
+    (reason) =>
+      PromiseCore.resolve(cb()).then((x) => PromiseCore.reject(reason)),
+  ); */
+  return new Promise((resolve, reject) => {
+    /* 继承 this 的结果 */
+    this.then(
+      (value) => PromiseCore.resolve(cb()).then(() => resolve(value)),
+      (reason) => PromiseCore.resolve(cb()).then((x) => reject(reason)),
+    );
+  });
+};
+
 export default PromiseCore;
