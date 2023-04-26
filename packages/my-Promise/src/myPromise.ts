@@ -75,4 +75,21 @@ PromiseCore.allSettled = (promiseList: any[]) => {
   });
 };
 
+PromiseCore.race = (promiseList: any[]) => {
+  let rejectCount = 0;
+  return new PromiseCore((resolve, reject) => {
+    promiseList.forEach((p) => {
+      PromiseCore.resolve(p).then(
+        (res) => resolve(res),
+        (reason) => {
+          rejectCount++;
+          if (rejectCount === promiseList.length) {
+            reject("All Promise were rejected");
+          }
+        },
+      );
+    });
+  });
+};
+
 export default PromiseCore;

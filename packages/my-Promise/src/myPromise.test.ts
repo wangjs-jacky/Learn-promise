@@ -94,4 +94,28 @@ describe("测试 Promise", () => {
         done();
       });
     }));
+  it("测试 Promise.race 功能", () =>
+    new Promise<void>((done) => {
+      const p1 = new myPromise((resolve) => {
+        setTimeout(() => resolve(200), 200);
+      });
+      const p2 = new myPromise((resolve) => {
+        setTimeout(() => resolve(100), 100);
+      });
+
+      myPromise.race([p1, p2]).then((res) => {
+        expect(res).toMatchInlineSnapshot("100");
+        done();
+      });
+    }));
+  it("测试 Promise.race 功能 - 所有测试案例均失败", () =>
+    new Promise<void>((done) => {
+      const p1 = myPromise.reject("err1");
+      const p2 = myPromise.reject("err2");
+
+      myPromise.race([p1, p2]).catch((reason) => {
+        expect(reason).toMatchInlineSnapshot('"All Promise were rejected"');
+        done();
+      });
+    }));
 });

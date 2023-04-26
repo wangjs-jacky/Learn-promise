@@ -7,6 +7,7 @@ class PromiseCore {
   static resolve1: (parameter: any) => PromiseCore;
   static allSettled: (promiseList: any[]) => PromiseCore;
   static all: (promiseList: any[]) => PromiseCore;
+  static race: (promiseList: any[]) => PromiseCore;
 
   resolve(result) {
     /* @todo: 理论上 resolve 应由 微任务 处理，这里仅使用宏任务模拟 */
@@ -36,6 +37,10 @@ class PromiseCore {
         }
       });
     });
+  }
+
+  catch(reason) {
+    this.then(null, reason);
   }
 
   constructor(fn: Function) {
