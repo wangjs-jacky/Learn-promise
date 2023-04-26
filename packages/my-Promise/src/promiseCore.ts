@@ -5,7 +5,8 @@ class PromiseCore {
   static resolve: (parameter: any) => PromiseCore;
   static reject: (parameter: any) => PromiseCore;
   static resolve1: (parameter: any) => PromiseCore;
-  static all: (promiseList: any[]) => Promise<unknown>;
+  static allSettled: (promiseList: any[]) => PromiseCore;
+  static all: (promiseList: any[]) => PromiseCore;
 
   resolve(result) {
     /* @todo: 理论上 resolve 应由 微任务 处理，这里仅使用宏任务模拟 */

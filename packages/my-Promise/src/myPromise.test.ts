@@ -66,4 +66,32 @@ describe("测试 Promise", () => {
         done();
       });
     }));
+
+  it("测试 Promise.allSellted 功能", () =>
+    new Promise<void>((done) => {
+      const p1 = 1;
+      const p2 = new myPromise((resolve) => resolve(2));
+      const p3 = myPromise.resolve(3);
+      const p4 = myPromise.reject("err4");
+
+      myPromise.allSettled([p1, p2, p4]).then((res) => {
+        expect(res).toMatchInlineSnapshot(`
+          [
+            {
+              "status": "fulfilled",
+              "value": 1,
+            },
+            {
+              "status": "fulfilled",
+              "value": 2,
+            },
+            {
+              "reason": "err4",
+              "status": "rejected",
+            },
+          ]
+        `);
+        done();
+      });
+    }));
 });

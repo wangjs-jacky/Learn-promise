@@ -20,7 +20,7 @@ PromiseCore.all = (promiseList: any[]) => {
   /* 记录结果数组 */
   const result = [] as any[];
   let resCount = 0;
-  return new Promise((resolve, reject) => {
+  return new PromiseCore((resolve, reject) => {
     if (promiseList.length === 0) {
       resolve([]);
     }
@@ -35,6 +35,40 @@ PromiseCore.all = (promiseList: any[]) => {
         },
         (reason) => {
           reject(reason);
+        },
+      );
+    });
+  });
+};
+
+PromiseCore.allSettled = (promiseList: any[]) => {
+  const result = [] as any[];
+  let resovleCount = 0;
+  return new PromiseCore((resolve) => {
+    if (promiseList.length === 0) {
+      resolve([]);
+    }
+    promiseList.forEach((p, i) => {
+      PromiseCore.resolve(p).then(
+        (res) => {
+          resovleCount++;
+          result[i] = {
+            status: "fulfilled",
+            value: res,
+          };
+          if (resovleCount === promiseList.length) {
+            return resolve(result);
+          }
+        },
+        (reason) => {
+          resovleCount++;
+          result[i] = {
+            status: "rejected",
+            reason: reason,
+          };
+          if (resovleCount === promiseList.length) {
+            return resolve(result);
+          }
         },
       );
     });
