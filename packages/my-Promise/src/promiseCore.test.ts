@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { myPromise as Promise } from "./myPromise";
+import { PromiseCore as Promise } from "./promiseCore";
 
 /* 如果所有用例都并发执行的话，可以使用 describe.concurrent */
 describe("Promise", () => {
