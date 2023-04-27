@@ -1,0 +1,12 @@
+{
+  "name": "async-await",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test:unit": "vitest run"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
