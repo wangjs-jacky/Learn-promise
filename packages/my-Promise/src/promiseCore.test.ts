@@ -29,6 +29,13 @@ describe("Promise", () => {
       expect(reject).toBeTypeOf("function");
     });
   });
+  it("then 支持两个函数，也可不传", () => {
+    new Promise((resolve, reject) => {}).then(null, null);
+    new Promise((resolve, reject) => {}).then(
+      () => {},
+      () => {},
+    );
+  });
 
   it("promise.then(success) 中的 success 会在 resolve 被调用的时候执行", () =>
     new Promise((done) => {
@@ -36,12 +43,16 @@ describe("Promise", () => {
       const success = vi.fn();
       const promise = new Promise((resolve, reject) => {
         expect(success).not.toHaveBeenCalled();
-        resolve();
         setTimeout(() => {
-          expect(success).toHaveBeenCalled();
-          done();
-        }, 20);
+          resolve();
+        }, 10);
       });
+      expect(promise.state).toMatchInlineSnapshot('"pending"');
+      setTimeout(() => {
+        expect(success).toHaveBeenCalled();
+        expect(promise.state).toMatchInlineSnapshot('"fulfilled"');
+        done();
+      }, 20);
       promise.then(success);
     }));
 
@@ -50,12 +61,16 @@ describe("Promise", () => {
       const fail = vi.fn();
       const promise = new Promise((resolve, reject) => {
         expect(fail).not.toHaveBeenCalled();
-        reject();
         setTimeout(() => {
-          expect(fail).toHaveBeenCalled();
-          done();
-        });
+          reject();
+        }, 10);
       });
+      expect(promise.state).toMatchInlineSnapshot('"pending"');
+      setTimeout(() => {
+        expect(fail).toHaveBeenCalled();
+        expect(promise.state).toMatchInlineSnapshot('"rejected"');
+        done();
+      }, 20);
       promise.then(null, fail);
     }));
 
